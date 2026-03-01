@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HALO: Plain-Language Summary</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      line-height: 1.7;
+    }
+
+    /* ── header ─────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    header .subtitle {
+      font-size: 1.05rem;
+      opacity: 0.75;
+      margin-top: 0.5rem;
+    }
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+    .badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.78rem;
+      color: #e0d9ff;
+    }
+
+    /* ── layout ──────────────────────────────────────────────── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      padding: 2rem 2.2rem;
+      margin-bottom: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #302b63;
+      border-left: 4px solid #7c3aed;
+      padding-left: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    p { margin-bottom: 0.9rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── evidence ladder ─────────────────────────────────────── */
+    .ladder {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+    }
+
+    .rung {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      border-left: 5px solid transparent;
+      transition: transform 0.15s;
+    }
+    .rung:hover { transform: translateX(3px); }
+
+    .rung.validated   { background: #f0fdf4; border-color: #22c55e; }
+    .rung.deferred    { background: #fafafa; border-color: #cbd5e1; }
+
+    .rung-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      margin-top: 0.15rem;
+    }
+    .validated .rung-tag  { background: #dcfce7; color: #15803d; }
+    .deferred  .rung-tag  { background: #f1f5f9; color: #64748b; }
+
+    .rung-body strong { display: block; margin-bottom: 0.15rem; color: #1a1a2e; }
+    .rung-body span { font-size: 0.88rem; color: #475569; }
+
+    .rung-label {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #7c3aed;
+      min-width: 2rem;
+      margin-top: 0.1rem;
+    }
+
+    /* ── key findings grid ───────────────────────────────────── */
+    .finding-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .finding-card {
+      background: #f5f3ff;
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .finding-card .number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+    }
+    .finding-card .label {
+      font-size: 0.82rem;
+      color: #4b5563;
+      margin-top: 0.3rem;
+    }
+
+    /* ── grover chart ────────────────────────────────────────── */
+    .grover-chart {
+      margin-top: 1.2rem;
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 1.2rem;
+      overflow: hidden;
+    }
+    .grover-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 130px;
+    }
+    .grover-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .grover-bar {
+      width: 100%;
+      border-radius: 5px 5px 0 0;
+    }
+    .grover-bar.high  { background: #7c3aed; }
+    .grover-bar.low   { background: #c4b5fd; }
+    .grover-col .val  { font-size: 0.73rem; font-weight: 700; color: #374151; margin-bottom: 4px; }
+    .grover-col .gen  { font-size: 0.68rem; color: #9ca3af; margin-top: 4px; }
+    .grover-caption {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* ── not-claimed box ─────────────────────────────────────── */
+    .not-claimed {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
+    }
+    .not-claimed h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 0.5rem;
+    }
+    .not-claimed ul {
+      list-style: none;
+      padding: 0;
+    }
+    .not-claimed ul li {
+      font-size: 0.88rem;
+      color: #78350f;
+      padding-left: 1.3rem;
+      position: relative;
+      margin-bottom: 0.3rem;
+    }
+    .not-claimed ul li::before {
+      content: "x";
+      position: absolute;
+      left: 0;
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    /* ── reproducibility ─────────────────────────────────────── */
+    .repro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .repro-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.83rem;
+      color: #334155;
+    }
+    .repro-item span {
+      display: block;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.82rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>HALO</h1>
+  <div class="subtitle">Holographic Artificial-Life with Observational Confinement &mdash; Plain-Language Summary</div>
+  <div class="badge-row">
+    <span class="badge">Quantum Computing</span>
+    <span class="badge">Artificial Life</span>
+    <span class="badge">Grover Amplitude Amplification</span>
+    <span class="badge">Holographic Compression</span>
+    <span class="badge">Six-Rung Evidence Ladder</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1. What is HALO? -->
+  <section>
+    <h2>1. What is HALO?</h2>
+
+    <p>
+      HALO is a blueprint for building <strong>artificial life entirely inside a quantum
+      computer</strong>. It combines four well-understood quantum techniques into a single
+      architecture: a clock that runs without any external timekeeper, noise-protected
+      agent states, memory-efficient holographic compression, and a fitness test that is
+      computationally hard for outside observers to reverse-engineer.
+    </p>
+    <p>
+      The core idea is that all the machinery of evolution &mdash; time, noise protection,
+      state compression, and fitness selection &mdash; can be implemented as sequences of
+      quantum gates, with no classical computer stepping in between.
+    </p>
+    <p>
+      This document explains what has actually been demonstrated, step by step, and what
+      remains to be done. Every claim is evaluated on a six-rung evidence ladder.
+    </p>
+  </section>
+
+  <!-- 2. The Evidence Ladder -->
+  <section>
+    <h2>2. The Six-Rung Evidence Ladder</h2>
+
+    <p>
+      Rather than making a single large claim, HALO uses a <strong>claim ladder</strong>:
+      six levels of assertions, each strictly stronger than the last. Each rung carries
+      a declared evidence threshold &mdash; a concrete test that can falsify it.
+      Rungs C0 through C5 have been validated; C6 is explicitly deferred to future work.
+    </p>
+
+    <div class="ladder">
+
+      <div class="rung validated">
+        <span class="rung-label">C0</span>
+        <div class="rung-body">
+          <strong>Toy composability</strong>
+          <span>A 5-qubit noiseless circuit confirms that the clock, DFS noise
+          protection, holographic map, and fitness verifier all work together.
+          Ancilla qubits return cleanly to zero (no irreversible erasure).</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung validated">
+        <span class="rung-label">C1</span>
+        <div class="rung-body">
+          <strong>Scalability proxy</strong>
+          <span>Binary-encoded circuits scale sub-linearly in qubit count (log-log slope
+          0.43 vs. 1.0 for one-per-site baseline) on a lattice-Trotter benchmark.
+          A depth tradeoff (~2.9x deeper circuits) is openly reported.</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung validated">
+        <span class="rung-label">C2</span>
+        <div class="rung-body">
+          <strong>Subspace compression</strong>
+          <span>Explicit isometric embeddings for k-excitation subspaces (k = 1, 2, 3;
+          bulk sizes up to N = 32) achieve zero isometry error across all 12 instances,
+          with compression ratios up to 6.4x.</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung validated">
+        <span class="rung-label">C3</span>
+        <div class="rung-body">
+          <strong>Security hardening trend</strong>
+          <span>A bounded heuristic attacker's success rate drops from 69% to 20%
+          as system size grows from n = 6 to n = 18 qubits
+          (Mann-Kendall p = 0.0027). This is an empirical trend, not a
+          complexity-theoretic proof.</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung validated">
+        <span class="rung-label">C4</span>
+        <div class="rung-body">
+          <strong>Cross-sector holographic compression</strong>
+          <span>Direct-sum isometries spanning multiple excitation sectors simultaneously
+          (K in {1,2}, {0,1,2}, {1,2,3}) are constructed for bulk sizes N in {4, 6}.
+          All 6 instances achieve zero isometry error. Sector leakage under a
+          transverse-field perturbation is characterised: exactly zero at strength = 0;
+          for short evolution times (t=0.5) leakage grows monotonically with perturbation
+          strength; at longer times (t=1.0, t=2.0) leakage peaks near &Gamma;&approx;0.625
+          then decreases, consistent with quantum recurrence effects.</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung validated">
+        <span class="rung-label">C5</span>
+        <div class="rung-body">
+          <strong>Fully quantum multi-generation evolution</strong>
+          <span>A Qiskit 5-qubit circuit evolves P = 8 agents through G = 5 generations
+          with no intermediate measurement. Fit-agent probability oscillates between
+          0.25 and 0.82 &mdash; the signature of Grover amplitude amplification.
+          The full selection-plus-mutation loop runs coherently from start to finish.</span>
+        </div>
+        <span class="rung-tag">Validated</span>
+      </div>
+
+      <div class="rung deferred">
+        <span class="rung-label">C6</span>
+        <div class="rung-body">
+          <strong>Hardware validation and universal compression</strong>
+          <span>Universal holographic compression for arbitrary Hamiltonians,
+          unconditional cryptographic security, and physical hardware experiments
+          at scale. These require advances beyond the current scope.</span>
+        </div>
+        <span class="rung-tag">Deferred</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. Key Results -->
+  <section>
+    <h2>3. Key Results at a Glance</h2>
+    <div class="finding-grid">
+      <div class="finding-card">
+        <div class="number">6</div>
+        <div class="label">Claim rungs validated (C0-C5); C6 explicitly deferred</div>
+      </div>
+      <div class="finding-card">
+        <div class="number">6.4x</div>
+        <div class="label">Best compression ratio achieved (C2, N=32, k=1), zero error</div>
+      </div>
+      <div class="finding-card">
+        <div class="number">0.43</div>
+        <div class="label">Qubit-count log-log slope for binary encoding vs. 1.0 for one-hot (C1)</div>
+      </div>
+      <div class="finding-card">
+        <div class="number">p=0.003</div>
+        <div class="label">Mann-Kendall p-value for hardening trend under heuristic attack (C3)</div>
+      </div>
+      <div class="finding-card">
+        <div class="number">6</div>
+        <div class="label">Cross-sector isometry instances, all zero error (C4)</div>
+      </div>
+      <div class="finding-card">
+        <div class="number">0.82</div>
+        <div class="label">Peak fit-agent probability via Grover evolution (C5), up from 0.25</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How the Quantum Evolution Works -->
+  <section>
+    <h2>4. How Does the Quantum Evolution Work? (C5)</h2>
+
+    <p>
+      Imagine 8 agents placed in a quantum superposition &mdash; all of them existing in
+      the circuit simultaneously. Each agent has an angle encoding its "fitness". Two
+      agents (numbers 6 and 7) start near the ideal angle; the other six are farther away.
+    </p>
+    <p>
+      One generation of evolution applies three quantum gates in sequence:
+    </p>
+    <ol style="margin: 0.5rem 0 0.8rem 1.5rem; color: #374151;">
+      <li style="margin-bottom: 0.4rem">
+        <strong>Fitness oracle</strong> &mdash; a multi-controlled phase flip that marks
+        the two fit agents with a -1 phase, without measuring or collapsing the state.
+      </li>
+      <li style="margin-bottom: 0.4rem">
+        <strong>Grover diffusion</strong> &mdash; inversion-about-mean on the population
+        register, which constructively amplifies the fit agents and destructively cancels
+        the unfit ones.
+      </li>
+      <li style="margin-bottom: 0.4rem">
+        <strong>Coherent mutation</strong> &mdash; a random DFS rotation applied
+        independently to each agent's angle, keeping the state fully coherent throughout.
+      </li>
+    </ol>
+    <p>
+      The result is a characteristic oscillation: the probability of landing on a fit agent
+      shoots up on odd generations and partially falls back on even ones &mdash; exactly the
+      Grover over-rotation cycle. The chart below shows this pattern.
+    </p>
+
+    <div class="grover-chart">
+      <div class="grover-bars">
+        <div class="grover-col">
+          <div class="val">0.25</div>
+          <div class="grover-bar low" style="height:30px;"></div>
+          <div class="gen">Gen 0</div>
+        </div>
+        <div class="grover-col">
+          <div class="val">0.82</div>
+          <div class="grover-bar high" style="height:98px;"></div>
+          <div class="gen">Gen 1</div>
+        </div>
+        <div class="grover-col">
+          <div class="val">0.40</div>
+          <div class="grover-bar low" style="height:48px;"></div>
+          <div class="gen">Gen 2</div>
+        </div>
+        <div class="grover-col">
+          <div class="val">0.26</div>
+          <div class="grover-bar low" style="height:31px;"></div>
+          <div class="gen">Gen 3</div>
+        </div>
+        <div class="grover-col">
+          <div class="val">0.81</div>
+          <div class="grover-bar high" style="height:97px;"></div>
+          <div class="gen">Gen 4</div>
+        </div>
+        <div class="grover-col">
+          <div class="val">0.41</div>
+          <div class="grover-bar low" style="height:49px;"></div>
+          <div class="gen">Gen 5</div>
+        </div>
+      </div>
+      <div class="grover-caption">
+        Fit-agent probability P_fit over 5 generations (C5 result).
+        The initial fit fraction is 0.25 (2 out of 8 agents).
+        Odd generations amplify fit agents; even generations show Grover over-rotation.
+        No intermediate measurement is performed throughout.
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Cross-sector compression -->
+  <section>
+    <h2>5. What Does Cross-Sector Compression Add? (C4)</h2>
+
+    <p>
+      The C2 result showed that quantum states in a <em>single</em> excitation sector
+      (e.g., exactly 1, or exactly 2, or exactly 3 particles present at a time) can be
+      compressed into far fewer qubits with no information loss.
+    </p>
+    <p>
+      C4 extends this to states that are <em>quantum superpositions across multiple
+      sectors at once</em> (e.g., both 1-particle and 2-particle components simultaneously).
+      A <em>direct-sum isometry</em> handles the combined subspace. For example, combining
+      sectors {1,2,3} at N = 6 sites compresses a 41-dimensional subspace into just
+      6 qubits (2^6 = 64), with zero isometry error.
+    </p>
+    <p>
+      The leakage experiment answers a practical question: how quickly does a state
+      <em>leave</em> its sector when a perturbation is switched on? The answer is clean:
+      at zero perturbation strength, leakage is exactly zero for any evolution time.
+      At short evolution times it grows monotonically with perturbation strength.
+      At longer times it peaks near &Gamma;&approx;0.625 then decreases &mdash; a quantum
+      recurrence effect. Together these results give a precise quantitative
+      boundary for when the single-sector approximation breaks down.
+    </p>
+  </section>
+
+  <!-- 6. What is NOT claimed -->
+  <section>
+    <h2>6. What This Paper Does Not Claim</h2>
+
+    <div class="not-claimed">
+      <h3>Explicitly deferred to future work (C6 and beyond)</h3>
+      <ul>
+        <li>Universal holographic compression for arbitrary Hamiltonians without sector restriction</li>
+        <li>Cryptographic security proof against polynomial-time quantum adversaries</li>
+        <li>Any experiment on physical quantum hardware (all results are noiseless simulation)</li>
+        <li>Noise-resilient composition under realistic NISQ hardware error models</li>
+        <li>Multi-generation heredity, crossover, or multi-locus fitness landscapes</li>
+        <li>Population evolution scaling to P much larger than 8 agents</li>
+      </ul>
+    </div>
+
+    <p style="margin-top: 1rem;">
+      The depth tradeoff for C1 is also openly acknowledged: the binary encoding
+      cuts qubit count by 57% on average, but increases two-qubit circuit depth by
+      a factor of 2.9. In depth-limited hardware this tradeoff is unfavourable.
+    </p>
+  </section>
+
+  <!-- 7. The Four Primitives -->
+  <section>
+    <h2>7. The Four Quantum Primitives</h2>
+
+    <p>
+      Every component of HALO rests on an independently-established quantum
+      information result:
+    </p>
+
+    <p>
+      <strong>Page-Wootters clock.</strong> Instead of an external clock, a single qubit is
+      prepared in superposition and entangled with the agent register. "Time" emerges from
+      this entanglement: the clock value conditions whether evolution has happened or not.
+      No classical timer is needed.
+    </p>
+
+    <p>
+      <strong>Decoherence-free subspace (DFS) encoding.</strong> Agent states live in the
+      two-qubit subspace spanned by |01&gt; and |10&gt;. Collective environmental noise
+      (same rotation on both qubits) acts as a global phase on this subspace, which is
+      undetectable under measurement. The agent is passively immune to this noise class
+      without active error correction.
+    </p>
+
+    <p>
+      <strong>Holographic compression.</strong> Inspired by AdS/CFT holography, an
+      isometric map encodes a large "bulk" Hilbert space into a smaller "boundary"
+      register. The C2 and C4 experiments make this concrete: specific subspaces are
+      compressed into log(dim) boundary qubits with zero information loss, verified
+      algebraically.
+    </p>
+
+    <p>
+      <strong>QMA-hard fitness.</strong> The fitness landscape is the ground-state energy
+      of a masked local Hamiltonian. An agent with the right "genetic secret" evaluates
+      its own fitness efficiently; an outside observer faces a problem believed to be
+      hard for any polynomial-time quantum computer. The C3 experiments provide empirical
+      (not complexity-theoretic) evidence for this hardening.
+    </p>
+  </section>
+
+  <!-- 8. Reproducibility -->
+  <section>
+    <h2>8. Reproducibility</h2>
+
+    <p>
+      Every number in the paper can be reproduced from the accompanying artifact package.
+      The package contains self-contained Python scripts, JSONL data files, and
+      figure-generation code. C4 and C5 scripts run with a numpy-only fallback when
+      Qiskit is not installed, producing identical numerical results.
+    </p>
+
+    <div class="repro-grid">
+      <div class="repro-item">
+        <span>halo_simulation.py</span>
+        C0 toy circuit: three pass/fail tests
+      </div>
+      <div class="repro-item">
+        <span>scaling_benchmark.py</span>
+        C1: one-hot vs binary qubit-count scaling benchmark
+      </div>
+      <div class="repro-item">
+        <span>run_extended_experiments.py</span>
+        C2-C3: compression &amp; security suites
+      </div>
+      <div class="repro-item">
+        <span>cross_sector_compression.py</span>
+        C4: direct-sum isometries and leakage sweep
+      </div>
+      <div class="repro-item">
+        <span>quantum_evolution.py</span>
+        C5: Grover evolution loop, 5 generations
+      </div>
+      <div class="repro-item">
+        <span>data/*.jsonl</span>
+        Raw results for all six experiments
+      </div>
+      <div class="repro-item">
+        <span>latex_source/fig_*.png</span>
+        All figures used in the paper
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. What comes next -->
+  <section>
+    <h2>9. What Comes Next (C6 and Open Problems)</h2>
+
+    <p>
+      The six-rung ladder is a map, not just a record. The validated rungs define a solid
+      base; the open problems define the next targets.
+    </p>
+
+    <p>
+      The most immediate next step is <strong>hardware validation</strong>: running the C0
+      toy circuit and at least the C5 evolution loop on a physical quantum device
+      (trapped ion or superconducting), to see how noise affects the Grover oscillation
+      and DFS protection in practice.
+    </p>
+
+    <p>
+      On the theory side, <strong>average-case hardness</strong> of the fitness function
+      remains unproven. The C3 empirical trend is consistent with hardness, but a
+      reduction from a well-studied problem (such as Learning With Errors) would be
+      needed for a complexity-theoretic guarantee. The paper sketches this conditional
+      reduction as a proposition in Appendix C.
+    </p>
+
+    <p>
+      Finally, <strong>multi-epoch population dynamics</strong> &mdash; heredity, crossover,
+      multi-locus fitness &mdash; require larger circuits than the current 5-qubit toy.
+      The C5 Grover loop is a stepping stone demonstrating that coherent selection and
+      mutation can coexist. Scaling this to populations of 64 or more agents while
+      preserving full coherence is a meaningful near-term target.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  HALO &mdash; Holographic Artificial-Life with Observational Confinement &nbsp;&middot;&nbsp;
+  Balagopal P &nbsp;&middot;&nbsp; <a href="mailto:balagopal.p44@gmail.com" style="color:inherit;">balagopal.p44@gmail.com</a> &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp;
+  All simulations performed on noiseless quantum circuit simulators.
+</footer>
+
+</body>
+</html>

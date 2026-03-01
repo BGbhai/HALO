@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it using the metadata below."
+title: "A Tiered Evidence Program for a Holographic Quantum Artificial-Life Architecture"
+authors:
+  - family-names: "P"
+    given-names: "Balagopal"
+    email: "balagopal.p44@gmail.com"
+version: "1.0.0"
+date-released: "2026-02-27"
+license: "CC-BY-4.0"
+abstract: >
+  HALO (Holographic Artificial-Life with Observational confinement) is a
+  quantum-computing architecture integrating the Page–Wootters mechanism,
+  decoherence-free subspace encoding, subspace-isometric holographic compression,
+  and complexity-theoretic fitness encryption. Using a six-rung claim-ladder
+  methodology, evidence is reported at six levels: toy-scale composability (C0),
+  sub-linear qubit-count scaling in a matched-fidelity proxy benchmark (C1),
+  explicit isometric compression across k-excitation subspaces (C2), a
+  statistically significant security hardening trend under a bounded heuristic
+  attacker (C3), direct-sum isometric embeddings spanning multiple excitation
+  sectors with zero isometry error (C4), and a fully quantum multi-generation
+  evolution loop via Grover amplitude amplification with no intermediate
+  measurement (C5). Hardware-scale validation is identified as an open problem
+  and explicitly deferred (C6).
+keywords:
+  - quantum computing
+  - artificial life
+  - Page-Wootters mechanism
+  - decoherence-free subspace
+  - holographic compression
+  - fitness encryption
+  - QMA-hardness
+  - Qiskit
+  - Grover amplitude amplification
+  - cross-sector isometry
+  - claim-ladder methodology
+type: article
+repository-code: "https://doi.org/10.5281/zenodo.18769321"
